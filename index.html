@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="dark antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HQ • Premium Virtual Workspace</title>
+    <!-- Tailwind Configuration for Dark Mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        
+        @layer base {
+            :root {
+                --bg-base: #f1f5f9;
+                --card-bg: rgba(255, 255, 255, 0.6);
+                --card-border: rgba(0, 0, 0, 0.05);
+                --card-hover-border: rgba(0, 0, 0, 0.15);
+                --accent-glow: rgba(56, 189, 248, 0.3);
+                --text-main: #0f172a;
+            }
+            .dark {
+                --bg-base: #030303;
+                --card-bg: rgba(20, 20, 22, 0.6);
+                --card-border: rgba(255, 255, 255, 0.06);
+                --card-hover-border: rgba(255, 255, 255, 0.15);
+                --accent-glow: rgba(56, 189, 248, 0.15);
+                --text-main: #ededed;
+            }
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.05), transparent 25%);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Premium Glass Panel */
+        .glass-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
+        .dark .glass-panel::before {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--card-hover-border);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1), 0 0 40px -10px var(--accent-glow);
+        }
+
+        .dark .glass-panel:hover {
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 40px -10px var(--accent-glow);
+        }
+
+        /* Primary Button Style */
+        .btn-premium {
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.1) inset, 0 8px 20px -6px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-premium:hover {
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.2) inset, 0 12px 28px -6px rgba(37, 99, 235, 0.6);
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        /* Secondary Button (Theme Adaptive) */
+        .btn-secondary {
+            background: rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.06);
+            border-color: rgba(0,0,0,0.15);
+        }
+        
+        .dark .btn-secondary {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .dark .btn-secondary:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* Typography & Gradients */
+        .text-gradient {
+            background: linear-gradient(to right, #0f172a, #64748b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .dark .text-gradient {
+            background: linear-gradient(to right, #ffffff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Live Indicator */
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            position: relative;
+        }
+        .status-dot.live {
+            background-color: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+        }
+        .dark .status-dot.live { box-shadow: 0 0 12px rgba(16, 185, 129, 0.8); }
+        
+        .status-dot.live::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid #10b981;
+            animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .status-dot.offline { background-color: #94a3b8; }
+        .dark .status-dot.offline { background-color: #52525b; }
+
+        @keyframes ping-slow {
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* Sync Animation */
+        .sync-icon { animation: spin 3s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+        .dark #toast {
+            background: rgba(24, 24, 27, 0.9);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+        #toast.show {
+            opacity: 1; visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Entry Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 lg:p-12 flex flex-col items-center justify-center transition-colors duration-300">
+
+    <div class="max-w-6xl w-full mx-auto space-y-6 z-10">
+        
+        <!-- Header / Nav area -->
+        <header class="flex justify-between items-center mb-4 fade-in-up">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-zinc-800 dark:to-zinc-900 border border-slate-300 dark:border-zinc-700 flex items-center justify-center shadow-lg transition-all duration-300">
+                    <i class="fa-solid fa-layer-group text-blue-500 dark:text-blue-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white transition-colors">Virtual HQ</h2>
+                    <p class="text-[11px] text-slate-500 dark:text-zinc-500 uppercase tracking-widest font-semibold transition-colors">Workspace Dashboard</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Status Badge -->
+                <div class="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-zinc-900/50 border border-slate-300/50 dark:border-zinc-700/50 backdrop-blur-md shadow-sm transition-all">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-400 dark:from-zinc-300 dark:to-zinc-500 text-[10px] font-black tracking-[0.25em] uppercase">
+                        ITS RAW & FUN
+                    </span>
+                </div>
+                
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-200/50 dark:bg-zinc-800/50 border border-slate-300/50 dark:border-zinc-700/50 text-slate-600 dark:text-zinc-300 hover:bg-slate-300/50 dark:hover:bg-zinc-700/50 transition-all focus:outline-none">
+                    <i class="fa-solid fa-moon dark:hidden text-sm"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline text-sm"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Asymmetrical Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <!-- 1. Hero Section -->
+            <div class="glass-panel md:col-span-8 p-8 md:p-12 flex flex-col justify-center relative fade-in-up delay-1">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/10 rounded-full blur-[80px] -mr-20 -mt-20"></div>
+                
+                <div class="relative z-10">
+                    <div class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/5 mb-6 text-sm font-medium w-max">
+                        <span id="statusDot" class="status-dot offline"></span>
+                        <span id="statusText" class="text-slate-600 dark:text-zinc-400 tracking-wide uppercase text-xs font-bold transition-colors">Offline Status</span>
+                    </div>
+
+                    <p class="text-slate-500 dark:text-zinc-400 uppercase tracking-[0.2em] text-xs font-bold mb-4 flex items-center gap-2 transition-colors">
+                        <i class="fa-regular fa-clock text-blue-500"></i> Time until next session
+                    </p>
+                    
+                    <h1 id="countdown" class="text-6xl md:text-[5.5rem] leading-none font-extrabold font-mono tracking-tighter text-gradient mb-8 drop-shadow-xl dark:drop-shadow-2xl">
+                        00:00:00
+                    </h1>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="https://meet.google.com/jib-mdhf-fqy" target="_blank" class="btn-premium text-white px-8 py-4 rounded-2xl font-semibold flex items-center justify-center gap-3 text-base">
+                            <i class="fa-solid fa-video"></i> Join Google Meet
+                        </a>
+                        <button onclick="copyMeetingLink()" class="btn-secondary text-slate-700 dark:text-zinc-300 px-6 py-4 rounded-2xl font-medium flex items-center justify-center gap-3 text-base">
+                            <i class="fa-regular fa-copy"></i> Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Timezone Widget -->
+            <div class="glass-panel md:col-span-4 p-8 flex flex-col justify-between fade-in-up delay-1 bg-gradient-to-b from-transparent to-slate-200/30 dark:to-zinc-900/30">
+                <div>
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 dark:text-emerald-400 border border-emerald-500/20 mb-5">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg text-slate-900 dark:text-white mb-1 transition-colors">Timezone Sync</h3>
+                    <p class="text-sm text-slate-500 dark:text-zinc-400 leading-relaxed transition-colors">Official Time: 11:00 PM - 01:00 AM<br>Bangladesh Time (GMT+6)<br>Sun, Mon, Wed, Thu</p>
+                </div>
+                
+                <div class="mt-8 bg-slate-100/80 dark:bg-black/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 transition-colors">
+                    <p class="text-[11px] text-slate-500 dark:text-zinc-500 mb-1.5 uppercase tracking-widest font-semibold">Your Local Time</p>
+                    <p id="localTimeDisplay" class="text-xl font-bold text-emerald-600 dark:text-emerald-400 font-mono tracking-tight transition-colors">--:--</p>
+                </div>
+            </div>
+
+            <!-- 3. Dynamic Topic Integration -->
+            <div class="glass-panel md:col-span-7 p-8 fade-in-up delay-2 relative">
+                <div class="absolute top-0 right-0 bg-blue-500/10 border-b border-l border-blue-500/20 text-blue-500 dark:text-blue-400 text-[10px] font-bold px-4 py-2 rounded-bl-2xl flex items-center gap-2">
+                    <i class="fa-solid fa-rotate sync-icon"></i> Live Sync
+                </div>
+
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 flex items-center justify-center text-blue-500 dark:text-blue-400 border border-slate-200 dark:border-white/10 shadow-inner">
+                        <i class="fa-solid fa-bolt text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-900 dark:text-white transition-colors">Today's Topics</h3>
+                        <p class="text-xs text-slate-500 dark:text-zinc-500 font-medium transition-colors">Real-time data from Google Sheets</p>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-100/50 dark:bg-black/20 rounded-2xl p-6 border border-slate-200 dark:border-white/5 transition-colors">
+                    <ul id="dynamic-topics" class="space-y-4 max-h-[150px] overflow-y-auto pr-2">
+                        <li class="text-slate-500 dark:text-zinc-400 text-sm flex items-center gap-3 animate-pulse">
+                            <div class="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+                            Fetching data from sheet...
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 4. General Agenda & Protocol combined -->
+            <div class="glass-panel md:col-span-5 p-8 flex flex-col gap-8 fade-in-up delay-3">
+                
+                <!-- Agenda snippet -->
+                <div>
+                    <h3 class="font-semibold text-sm text-slate-500 dark:text-zinc-400 uppercase tracking-widest mb-5 flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-list-check text-slate-400 dark:text-zinc-500"></i> General Agenda
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3 group">
+                            <div class="w-8 h-8 rounded-lg bg-slate-200/50 dark:bg-zinc-800/50 flex items-center justify-center border border-slate-300/50 dark:border-zinc-700/50 text-slate-500 dark:text-zinc-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors"><i class="fa-solid fa-code text-xs"></i></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-800 dark:text-zinc-200 transition-colors">Project Update & Sprint Review</p>
+                                <p class="text-xs text-slate-500 dark:text-zinc-500 mt-0.5 transition-colors">Reviewing ongoing progress.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 group">
+                            <div class="w-8 h-8 rounded-lg bg-slate-200/50 dark:bg-zinc-800/50 flex items-center justify-center border border-slate-300/50 dark:border-zinc-700/50 text-slate-500 dark:text-zinc-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors"><i class="fa-solid fa-bug text-xs"></i></div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-800 dark:text-zinc-200 transition-colors">Bug Fixing & Logic Building</p>
+                                <p class="text-xs text-slate-500 dark:text-zinc-500 mt-0.5 transition-colors">Solving technical issues.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-slate-300 dark:via-white/10 to-transparent transition-colors"></div>
+
+                <!-- Protocol Snippet -->
+                <div>
+                    <h3 class="font-semibold text-sm text-slate-500 dark:text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-shield-halved text-slate-400 dark:text-zinc-500"></i> Protocols
+                    </h3>
+                    <div class="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-zinc-400 transition-colors">
+                        <span class="px-3 py-1.5 rounded-md bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center gap-1.5"><i class="fa-solid fa-microphone-slash"></i> Stay Muted</span>
+                        <span class="px-3 py-1.5 rounded-md bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center gap-1.5"><i class="fa-solid fa-hand"></i> Raise Hand</span>
+                        <span class="px-3 py-1.5 rounded-md bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center gap-1.5"><i class="fa-solid fa-desktop"></i> Keep Screen Ready</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <footer class="mt-12 text-center text-slate-500 dark:text-zinc-600 text-xs font-medium uppercase tracking-widest fade-in-up delay-3 transition-colors">
+            &copy; 2026 Professional Virtual Workspace • Developed for Excellence
+        </footer>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"><i class="fa-solid fa-circle-check text-emerald-500 dark:text-emerald-400 mr-2"></i> Link copied successfully!</div>
+
+    <script>
+        // --- Theme Toggle Logic ---
+        function initTheme() {
+            if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        }
+        
+        // Initialize theme before loading content to prevent flash
+        initTheme();
+
+        // --- Meeting Logic ---
+        const MEETING_LINK = "https://meet.google.com/jib-mdhf-fqy";
+        const MEETING_DAYS = [0, 1, 3, 4]; // Sun, Mon, Wed, Thu
+        
+        // Google Sheet URL
+        const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6UEEQhUzijTC9sZBHlAkhbPY8o_-P27LXKJbqKdb_UAt-VGHOQhoDclKyFrO9Td5qoeILEF7XDu0z/pub?output=csv"; 
+        
+        // 1. Fetch Dynamic Topics
+        async function fetchTodayTopics() {
+            const container = document.getElementById('dynamic-topics');
+            try {
+                const response = await fetch(GOOGLE_SHEET_CSV_URL);
+                if (!response.ok) throw new Error("Network error");
+                
+                const csvText = await response.text();
+                const rows = csvText.split('\n')
+                                    .map(row => row.replace(/"/g, '').trim())
+                                    .filter(row => row.length > 0);
+                
+                container.innerHTML = ''; 
+
+                if(rows.length === 0) {
+                    container.innerHTML = `<li class="text-slate-500 dark:text-zinc-500 text-sm flex items-center gap-2"><i class="fa-regular fa-folder-open"></i> No topics for today.</li>`;
+                    return;
+                }
+
+                rows.forEach((row, index) => {
+                    if(index === 0 && row.toLowerCase().includes('topic')) return;
+
+                    const li = document.createElement('li');
+                    li.className = "flex gap-3 items-start group transition-all hover:translate-x-1";
+                    li.innerHTML = `
+                        <div class="mt-1 w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+                        <p class="font-medium text-slate-800 dark:text-zinc-200 text-sm leading-relaxed transition-colors">${row}</p>
+                    `;
+                    container.appendChild(li);
+                });
+            } catch (error) {
+                container.innerHTML = `
+                    <li class="flex gap-2 items-center text-red-500 dark:text-red-400 text-sm p-3 bg-red-100 dark:bg-red-500/10 rounded-lg border border-red-200 dark:border-red-500/20">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Failed to load data.
+                    </li>
+                `;
+            }
+        }
+
+        // 2. Local Time Display
+        function displayLocalMeetingTime() {
+            let utcMeetingTime = new Date();
+            utcMeetingTime.setUTCHours(17, 0, 0, 0); // 11 PM BD is 5 PM UTC
+
+            let localTimeString = utcMeetingTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+            document.getElementById('localTimeDisplay').innerText = localTimeString;
+        }
+
+        // 3. Status & Countdown Engine
+        function updateDashboard() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const bdTime = new Date(utc + (3600000 * 6));
+            
+            const bdDay = bdTime.getDay();
+            const bdHour = bdTime.getHours();
+
+            let isLive = false;
+            if (bdHour === 23 && MEETING_DAYS.includes(bdDay)) isLive = true;
+            else if (bdHour === 0) {
+                let prevDay = bdDay === 0 ? 6 : bdDay - 1;
+                if (MEETING_DAYS.includes(prevDay)) isLive = true;
+            }
+
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            const countdownEl = document.getElementById('countdown');
+
+            if (isLive) {
+                if (dot) dot.className = 'status-dot live';
+                if (text) {
+                    text.innerText = 'Live Session Active';
+                    text.className = 'text-emerald-600 dark:text-emerald-400 text-xs font-bold tracking-wide uppercase transition-colors';
+                }
+                
+                countdownEl.innerText = "LIVE NOW";
+                countdownEl.className = "text-6xl md:text-[5rem] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-400 dark:to-teal-200 mb-8 drop-shadow-[0_0_30px_rgba(52,211,153,0.4)] transition-all";
+                return; 
+            } else {
+                if (dot) dot.className = 'status-dot offline';
+                if (text) {
+                    text.innerText = 'Currently Offline';
+                    text.className = 'text-slate-600 dark:text-zinc-400 text-xs font-bold tracking-wide uppercase transition-colors';
+                }
+                
+                countdownEl.className = "text-6xl md:text-[5.5rem] leading-none font-extrabold font-mono tracking-tighter text-gradient mb-8 drop-shadow-xl dark:drop-shadow-2xl transition-all";
+            }
+
+            let nextMeeting = new Date(bdTime);
+            nextMeeting.setHours(23, 0, 0, 0); 
+
+            let daysToAdd = 0;
+            if (bdHour >= 23) daysToAdd = 1;
+
+            while (true) {
+                let targetDay = (bdTime.getDay() + daysToAdd) % 7;
+                if (MEETING_DAYS.includes(targetDay)) break;
+                daysToAdd++;
+            }
+
+            nextMeeting.setDate(bdTime.getDate() + daysToAdd);
+            let diff = nextMeeting - bdTime;
+
+            const h = Math.floor((diff / (1000 * 60 * 60)));
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+
+            countdownEl.innerText = 
+                `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // 4. Utility Functions
+        function copyMeetingLink() {
+            navigator.clipboard.writeText(MEETING_LINK).then(() => {
+                const toast = document.getElementById("toast");
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 3000);
+            });
+        }
+
+        // Boot
+        displayLocalMeetingTime();
+        updateDashboard();
+        fetchTodayTopics();
+        setInterval(updateDashboard, 1000);
+        setInterval(fetchTodayTopics, 60000); // Auto-refresh Google Sheet every 1 min
+    </script>
+</body>
+</html>
